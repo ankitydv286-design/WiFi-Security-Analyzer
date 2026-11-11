@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetShield | Wi-Fi Security Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon">N</span><div><strong>NetShield</strong><small>Network intelligence</small></div></div>
+    <nav>
+      <a class="nav-link active" href="#overview">▦ <span>Overview</span></a>
+      <a class="nav-link" href="#devices">▤ <span>Devices</span></a>
+      <a class="nav-link" href="#security">⬡ <span>Security analysis</span></a>
+      <a class="nav-link" href="#activity">⌁ <span>Network activity</span></a>
+      <a class="nav-link" href="#alerts">⚑ <span>Security alerts</span></a>
+    </nav>
+    <div class="sidebar-bottom"><span class="live-dot"></span> Local monitoring active</div>
+  </aside>
+
+  <main class="main-content" id="overview">
+    <header class="topbar">
+      <div><p class="eyebrow">NETWORK CONTROL CENTER</p><h1>Wi-Fi Security Dashboard</h1><p class="subtitle">Monitor your local network and review its basic security configuration.</p></div>
+      <button id="refreshButton" class="primary-button">↻ Refresh scan</button>
+    </header>
+
+    <section class="summary-grid">
+      <article class="metric-card"><div class="metric-label">Network status <span class="metric-icon">◉</span></div><div class="metric-value" id="networkStatus">Checking...</div><div class="metric-foot" id="latency">Checking connectivity</div></article>
+      <article class="metric-card"><div class="metric-label">Devices discovered <span class="metric-icon">▤</span></div><div class="metric-value" id="deviceCount">—</div><div class="metric-foot">Responding devices on local subnet</div></article>
+      <article class="metric-card"><div class="metric-label">Security score <span class="metric-icon">⬡</span></div><div class="metric-value" id="securityScore">—</div><div class="metric-foot" id="securityGrade">Configuration review</div></article>
+      <article class="metric-card"><div class="metric-label">Wi-Fi signal <span class="metric-icon">◔</span></div><div class="metric-value" id="wifiSignal">—</div><div class="metric-foot" id="wifiName">SSID unavailable</div></article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel" id="security">
+        <div class="panel-heading"><div><p class="eyebrow">CONNECTION DETAILS</p><h2>Wi-Fi information</h2></div><span class="tag">LOCAL DEVICE</span></div>
+        <div class="info-grid" id="wifiDetails"><div class="loading">Collecting Wi-Fi information...</div></div>
+      </article>
+      <article class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">SECURITY REVIEW</p><h2>Configuration checks</h2></div><span class="tag">BASIC AUDIT</span></div>
+        <div id="securityChecks" class="check-list"><div class="loading">Running checks...</div></div>
+        <p class="disclaimer" id="securityNote"></p>
+      </article>
+    </section>
+
+    <section class="panel" id="devices">
+      <div class="panel-heading"><div><p class="eyebrow">LOCAL NETWORK</p><h2>Discovered devices</h2></div><span class="tag" id="scanLabel">Waiting for scan</span></div>
+      <div class="table-wrap"><table><thead><tr><th>DEVICE / HOSTNAME</th><th>IP ADDRESS</th><th>MAC ADDRESS</th><th>STATUS</th></tr></thead><tbody id="deviceTable"><tr><td colspan="4" class="loading">Scanning your local subnet...</td></tr></tbody></table></div>
+      <p class="disclaimer">Discovery depends on device response and local network settings. Sleeping devices and client isolation may hide devices.</p>
+    </section>
+
+    <section class="panel" id="activity">
+      <div class="panel-heading"><div><p class="eyebrow">LIVE INTERFACE COUNTERS</p><h2>Network activity</h2></div><span class="tag">BYTES / SECOND</span></div>
+      <div class="traffic-grid"><div class="traffic-stat"><span>↓ Download throughput</span><strong id="downloadSpeed">0 B/s</strong></div><div class="traffic-stat"><span>↑ Upload throughput</span><strong id="uploadSpeed">0 B/s</strong></div></div>
+      <canvas id="trafficChart" height="100"></canvas>
+      <p class="disclaimer">These are measured device network-interface traffic rates, not a broadband speed test.</p>
+    </section>
+
+    <section class="panel" id="alerts">
+      <div class="panel-heading"><div><p class="eyebrow">EVENT HISTORY</p><h2>Security alerts & logs</h2></div><span class="tag">RECENT EVENTS</span></div>
+      <div id="alertList" class="alert-list"><div class="loading">No events loaded.</div></div>
+    </section>
+    <footer>NetShield · Local network visibility tool · Use only on networks you own or are authorized to assess.</footer>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
