@@ -13,6 +13,17 @@ from config import SCAN_TIMEOUT_SECONDS
 MAX_WORKERS = 64
 
 
+def _is_cloud():
+    """Detect cloud deployment environments such as Render."""
+    import os
+
+    return (
+        platform.system() != "Windows"
+        or os.environ.get("RENDER", "").lower() == "true"
+        or bool(os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
+    )
+
+
 def _get_subnet():
     ip = _get_local_ip()
 
@@ -21,7 +32,6 @@ def _get_subnet():
         return network
     except ValueError:
         return None
-
 
 
 def _ping(ip):
@@ -45,7 +55,6 @@ def _ping(ip):
 
         output = result.stdout.lower()
 
-        # Accept only an actual successful reply.
         if is_windows:
             return (
                 result.returncode == 0
@@ -57,9 +66,6 @@ def _ping(ip):
 
     except (OSError, subprocess.SubprocessError):
         return False
-
-
-  
 
 
 def _get_mac_from_arp(ip):
@@ -105,12 +111,15 @@ def _inspect_device(ip):
 
 
 def scan_local_network():
+    # Never scan the cloud server's internal network.
+    if _is_cloud():
+        return []
+
     network = _get_subnet()
 
     if network is None:
         return []
 
-    # Limit scanning to a maximum of 256 addresses.
     if network.num_addresses > 256:
         network = ipaddress.ip_network(
             f"{_get_local_ip()}/24",
@@ -119,9 +128,7 @@ def scan_local_network():
 
     devices = []
 
-    # Scan multiple addresses simultaneously.
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-
         futures = {
             executor.submit(_inspect_device, ip): ip
             for ip in network.hosts()
@@ -137,7 +144,6 @@ def scan_local_network():
             except Exception:
                 continue
 
-    # Keep results in IP address order.
     devices.sort(
         key=lambda device: ipaddress.ip_address(
             device["ip_address"]

@@ -1,4 +1,4 @@
-
+import platform
 from flask import Flask, jsonify, render_template
 from werkzeug.exceptions import HTTPException
 
@@ -56,11 +56,22 @@ def wifi():
 @app.get("/api/devices")
 def devices():
     result = scan_local_network()
+
+    if platform.system() != "Windows":
+        return jsonify({
+            "devices": [],
+            "count": 0,
+            "scan_available": False,
+            "message": "Network scanning is available only when running locally on Windows."
+        })
+
     save_devices(result)
 
     return jsonify({
         "devices": result,
-        "count": len(result)
+        "count": len(result),
+        "scan_available": True,
+        "message": "Local network scan completed successfully."
     })
 
 
