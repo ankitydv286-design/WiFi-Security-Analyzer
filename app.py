@@ -19,7 +19,7 @@ from database.db import (
 
 
 app = Flask(__name__)
-
+init_db()
 
 @app.get("/")
 def dashboard():
@@ -128,8 +128,6 @@ def handle_server_error(error):
 
 
 if __name__ == "__main__":
-    init_db()
-
     app.run(
         host="127.0.0.1",
         port=5000,
